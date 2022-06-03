@@ -1,5 +1,3 @@
-using Books.MinimalApi.Contexts;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BooksDbContext>(options =>
@@ -13,5 +11,13 @@ var app = builder.Build();
 app.UseSwagger();
 
 app.UseSwaggerUI();
+
+app.MapGet("/api/books", async (BooksDbContext context) => await context.Books.ToListAsync());
+
+app.MapGet("/api/books/{id}", async (BooksDbContext context, [FromRoute] Guid id) =>
+{
+    var book = await context.Books.FindAsync(id);
+    return book is null ? Results.NotFound() : Results.Ok(book);
+});
 
 await app.RunAsync();
