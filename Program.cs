@@ -12,7 +12,7 @@ app.UseSwagger();
 
 app.UseSwaggerUI();
 
-app.MapGet("/api/books", async (BooksDbContext context) => await context.Books.ToListAsync());
+app.MapGet("/api/books", async (BooksDbContext context) => Results.Ok(await context.Books.ToListAsync()));
 
 app.MapGet("/api/books/{id}", async (BooksDbContext context, [FromRoute] Guid id) =>
 {
