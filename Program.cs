@@ -14,4 +14,4 @@ app.UseSwagger();
 
 app.UseSwaggerUI();
 
-app.Run();
+await app.RunAsync();
