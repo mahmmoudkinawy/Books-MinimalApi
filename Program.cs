@@ -73,4 +73,16 @@ app.MapPut("/api/books/{id:guid}", async (BooksDbContext context,
     return Results.ValidationProblem(validationResult.Errors);
 });
 
+app.MapDelete("/api/books/{id:guid}", async (BooksDbContext context, [FromRoute] Guid id) =>
+{
+    var book = await context.Books.FindAsync(id);
+
+    if (book == null) return Results.NotFound();
+
+    context.Books.Remove(book);
+    await context.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
 await app.RunAsync();
