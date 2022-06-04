@@ -4,5 +4,6 @@ public class BooksProfiles : Profile
     public BooksProfiles()
     {
         CreateMap<BookEntity, BookDto>();
+        CreateMap<BookCreateDto, BookEntity>();
     }
 }
