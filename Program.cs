@@ -3,6 +3,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BooksDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -12,12 +14,16 @@ app.UseSwagger();
 
 app.UseSwaggerUI();
 
-app.MapGet("/api/books", async (BooksDbContext context) => Results.Ok(await context.Books.ToListAsync()));
+app.MapGet("/api/books", async (BooksDbContext context, IMapper mapper) =>
+        Results.Ok(mapper.Map<IReadOnlyList<BookEntity>>(await context.Books.ToListAsync())));
 
-app.MapGet("/api/books/{id}", async (BooksDbContext context, [FromRoute] Guid id) =>
+app.MapGet("/api/books/{id}", async (BooksDbContext context, [FromRoute] Guid id, IMapper mapper) =>
 {
     var book = await context.Books.FindAsync(id);
-    return book is null ? Results.NotFound() : Results.Ok(book);
+
+    if (book == null) return Results.NotFound();
+
+    return Results.Ok(mapper.Map<BookEntity>(book));
 });
 
 await app.RunAsync();
